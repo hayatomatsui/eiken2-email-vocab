@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英検2級 Eメール問題 単語帳（テストモード）</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --sub: #666;
+    --line: #e5e5e0;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04);
+
+    --c-address: #c84b31;
+    --c-address-soft: #fdf0ec;
+    --c-subject: #2c5f8d;
+    --c-subject-soft: #e8f0f7;
+    --c-signature: #4a7c4e;
+    --c-signature-soft: #e8f1e8;
+    --c-trend: #b8860b;
+    --c-trend-soft: #faf3e0;
+    --c-strategy: #6b4e8b;
+    --c-strategy-soft: #f0e8f5;
+
+    --done: #d4edda;
+    --done-border: #b8d4be;
+    --veil: #f0f0eb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 16px; }
+
+  header {
+    padding: 8px 0 14px;
+  }
+  h1 {
+    font-size: 1.5em;
+    margin: 0 0 4px;
+    letter-spacing: -0.5px;
+  }
+  .lede {
+    color: var(--sub);
+    margin: 0;
+    font-size: 0.9em;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    border-bottom: 2px solid var(--line);
+    margin: 16px 0 0;
+    padding-bottom: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab {
+    padding: 10px 16px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.92em;
+    font-weight: 500;
+    color: var(--sub);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    white-space: nowrap;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .tab[data-cat="address"].active { border-bottom-color: var(--c-address); color: var(--c-address); }
+  .tab[data-cat="subject"].active { border-bottom-color: var(--c-subject); color: var(--c-subject); }
+  .tab[data-cat="signature"].active { border-bottom-color: var(--c-signature); color: var(--c-signature); }
+  .tab[data-cat="trend"].active { border-bottom-color: var(--c-trend); color: var(--c-trend); }
+  .tab[data-cat="strategy"].active { border-bottom-color: var(--c-strategy); color: var(--c-strategy); }
+  .tab .count {
+    display: inline-block;
+    background: rgba(0,0,0,0.06);
+    color: var(--sub);
+    padding: 1px 8px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    margin-left: 6px;
+    font-weight: 600;
+  }
+  .tab.active .count {
+    background: rgba(0,0,0,0.12);
+    color: var(--ink);
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .toolbar input[type="search"] {
+    flex: 1;
+    min-width: 160px;
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 0.9em;
+    background: white;
+    font-family: inherit;
+  }
+  .btn {
+    padding: 8px 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.85em;
+    color: var(--ink);
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn:hover { background: #f0f0eb; }
+  .btn.primary { background: var(--ink); color: white; border-color: var(--ink); }
+  .btn.primary:hover { background: #333; }
+  .progress {
+    font-size: 0.85em;
+    color: var(--sub);
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  .progress strong { color: var(--ink); font-size: 1.15em; }
+
+  /* Section banner */
+  .cat-banner {
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    border-left: 5px solid;
+  }
+  .cat-banner h2 {
+    font-size: 1.15em;
+    margin: 0 0 4px;
+  }
+  .cat-banner p {
+    font-size: 0.88em;
+    margin: 0;
+    color: var(--sub);
+  }
+  .cat-banner.address { background: var(--c-address-soft); border-color: var(--c-address); }
+  .cat-banner.address h2 { color: var(--c-address); }
+  .cat-banner.subject { background: var(--c-subject-soft); border-color: var(--c-subject); }
+  .cat-banner.subject h2 { color: var(--c-subject); }
+  .cat-banner.signature { background: var(--c-signature-soft); border-color: var(--c-signature); }
+  .cat-banner.signature h2 { color: var(--c-signature); }
+  .cat-banner.trend { background: var(--c-trend-soft); border-color: var(--c-trend); }
+  .cat-banner.trend h2 { color: var(--c-trend); }
+  .cat-banner.strategy { background: var(--c-strategy-soft); border-color: var(--c-strategy); }
+  .cat-banner.strategy h2 { color: var(--c-strategy); }
+
+  .subhead {
+    font-size: 0.95em;
+    font-weight: 700;
+    margin: 24px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* Cards */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 10px;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: var(--shadow);
+    transition: all 0.15s;
+    position: relative;
+  }
+  .card.done {
+    background: var(--done);
+    border-color: var(--done-border);
+  }
+  .card .en {
+    font-weight: 700;
+    font-size: 1em;
+    line-height: 1.3;
+    margin-bottom: 6px;
+    padding-right: 32px;
+  }
+  .card.done .en {
+    text-decoration: line-through;
+    opacity: 0.75;
+  }
+
+  /* Check button - top right */
+  .card .mark {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 26px;
+    height: 26px;
+    border: 1.5px solid #c0c0b8;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: transparent;
+    transition: all 0.15s;
+    user-select: none;
+    padding: 0;
+  }
+  .card .mark:hover { border-color: var(--c-signature); }
+  .card.done .mark {
+    background: var(--c-signature);
+    border-color: var(--c-signature);
+    color: white;
+  }
+
+  /* Japanese reveal area */
+  .reveal {
+    cursor: pointer;
+    user-select: none;
+    border-radius: 6px;
+    padding: 8px 10px;
+    transition: all 0.15s;
+    position: relative;
+    min-height: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .reveal:hover { background: rgba(0,0,0,0.02); }
+  .reveal.hidden {
+    background: var(--veil);
+    color: transparent;
+    border: 1px dashed #c0c0b8;
+  }
+  .reveal.hidden::before {
+    content: "クリックで意味を表示";
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 0.82em;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  .reveal .ja {
+    font-size: 0.92em;
+    line-height: 1.4;
+  }
+  .reveal .ctx {
+    font-size: 0.78em;
+    color: var(--sub);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Empty / no results */
+  .empty {
+    text-align: center;
+    color: var(--sub);
+    padding: 40px 20px;
+    font-size: 0.9em;
+  }
+
+  /* Strategy tab */
+  .strategy-content { padding: 0; }
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+  }
+  .steps li {
+    counter-increment: step;
+    padding: 12px 0 12px 50px;
+    position: relative;
+    border-bottom: 1px dashed var(--line);
+    font-size: 0.95em;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 34px;
+    height: 34px;
+    background: var(--c-strategy);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95em;
+  }
+  .steps strong { color: var(--c-strategy); }
+  .tip {
+    background: var(--c-trend-soft);
+    border-left: 4px solid var(--c-trend);
+    padding: 14px 16px;
+    border-radius: 6px;
+    margin-top: 16px;
+    font-size: 0.92em;
+  }
+  .tip strong { color: var(--c-trend); }
+
+  .hidden-card { display: none !important; }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 12px; }
+    h1 { font-size: 1.25em; }
+    .tab { padding: 10px 12px; font-size: 0.85em; }
+    .toolbar { gap: 6px; }
+    .btn { padding: 7px 10px; font-size: 0.8em; }
+    .grid { grid-template-columns: 1fr; }
+    .progress { width: 100%; order: 99; text-align: right; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>英検2級 Eメール問題 単語帳</h1>
+    <p class="lede">タブで分野を選び、日本語の部分をクリックして意味を確認 → 覚えたら右上の □ にチェック。</p>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button class="tab active" data-cat="address">1. アドレス <span class="count" id="count-address"></span></button>
+    <button class="tab" data-cat="subject">2. 件名 (Subject) <span class="count" id="count-subject"></span></button>
+    <button class="tab" data-cat="signature">3. 署名・部署 <span class="count" id="count-signature"></span></button>
+    <button class="tab" data-cat="trend">4. 新傾向 <span class="count" id="count-trend"></span></button>
+    <button class="tab" data-cat="strategy">攻略法</button>
+  </nav>
+
+  <div class="toolbar" id="toolbar">
+    <input type="search" id="search" placeholder="🔍 英語/日本語で検索...">
+    <button class="btn" id="hideAll">すべて隠す</button>
+    <button class="btn" id="showAll">すべて見せる</button>
+    <button class="btn" id="reset">習得をリセット</button>
+    <div class="progress">この分野: <strong id="doneCount">0</strong> / <span id="totalCount">0</span></div>
+  </div>
+
+  <main id="panels"></main>
+
+</div>
+
+<script>
+const DATA = {
+  address: {
+    label: "1. メールアドレスのドメイン・ユーザー名",
+    desc: "@の前後を見ると「友人個人」「学校」「お店」「クラブ」などの正体が一瞬で分かる。",
+    sections: [
+      ["学校・教育機関", [
+        ["@school / @highschool", "学校・高校", "授業・行事・留学の連絡"],
+        ["@university / .edu", "大学", "講義・大学生活・サークル"],
+        ["@academy", "学院・専門校", "習い事・専門学校"],
+        ["@language-school", "語学学校", "英会話・レッスン案内"],
+        ["@cookingschool", "料理教室", "体験レッスン・コース紹介"],
+      ]],
+      ["クラブ・部活・サークル", [
+        ["@soccerclub / @baseballclub", "サッカー部・野球部", "練習日程・大会案内"],
+        ["@musicclub / @bandclub", "音楽部・バンド", "演奏会・新メンバー募集"],
+        ["@dramaclub / @theatre", "演劇部・劇団", "公演・チケット"],
+        ["@englishclub", "英語部", "スピーチ大会・交流会"],
+        ["@sportsclub / @gym / @fitness", "スポーツクラブ・ジム", "入会・コース変更"],
+      ]],
+      ["お店・サービス", [
+        ["@bookstore", "書店", "取り寄せ・新刊案内"],
+        ["@cafe / @restaurant", "カフェ・レストラン", "予約確認・新メニュー"],
+        ["@travelagency / @tourism", "旅行会社・観光局", "ツアー案内・予約変更"],
+        ["@hotel / @resort", "ホテル・リゾート", "宿泊予約・キャンセル"],
+        ["@shop / @store", "店舗", "商品案内・セール"],
+      ]],
+      ["公共・地域施設", [
+        ["@library", "図書館", "返却・イベント・読書会"],
+        ["@museum / @gallery", "博物館・美術館", "展示・開館時間"],
+        ["@zoo / @aquarium", "動物園・水族館", "特別展示・割引案内"],
+        ["@community-center", "公民館・地域センター", "地域行事・講座"],
+        ["@volunteer / @charity", "ボランティア団体", "活動募集・寄付呼びかけ"],
+      ]],
+      ["個人・ホストファミリー", [
+        ["@gmail.com / @yahoo.com / @hotmail.com", "個人アカウント", "友人・家族からの私信"],
+        ["@hostfamily / @homestay", "ホストファミリー", "受け入れ準備・生活ルール"],
+      ]],
+      ["業務窓口を示すユーザー名 (@の前)", [
+        ["info@", "案内窓口", "一般的なお知らせ"],
+        ["support@ / help@", "サポート窓口", "問題対応・問い合わせ返信"],
+        ["sales@", "営業窓口", "商品案内・売込み"],
+        ["contact@ / inquiry@", "問い合わせ窓口", "一般質問への返信"],
+        ["newsletter@ / news@", "メルマガ配信", "定期お知らせ・キャンペーン"],
+        ["reservation@ / booking@", "予約係", "予約確認・変更"],
+      ]],
+    ],
+  },
+  subject: {
+    label: "2. 件名 (Subject) の頻出語",
+    desc: "件名は「メールの目的」を一語で示す。動詞・名詞のパターンで覚えると速い。",
+    sections: [
+      ["招待・歓迎・感謝", [
+        ["Invitation to / Invitation for", "〜への招待", "パーティー・イベント参加依頼"],
+        ["Welcome to", "〜へようこそ", "新メンバー・新生活"],
+        ["Thank you for", "〜への御礼", "贈り物・参加への感謝"],
+        ["Congratulations on", "〜おめでとう", "合格・受賞"],
+      ]],
+      ["質問・依頼・問い合わせ", [
+        ["Question about", "〜についての質問", "商品・授業・予定の問い合わせ"],
+        ["Inquiry about", "〜のお問い合わせ", "顧客からの正式な質問"],
+        ["Request for", "〜のお願い", "協力依頼・提出依頼"],
+        ["Help with", "〜の手伝いを", "作業・課題の協力依頼"],
+      ]],
+      ["お知らせ・案内・更新", [
+        ["Information about", "〜のご案内", "イベント・サービスの説明"],
+        ["Notice / Notification of", "〜のお知らせ", "変更・中止通知"],
+        ["Announcement", "発表・告知", "新企画・新発売"],
+        ["Update on", "〜の最新情報", "進捗・状況報告"],
+        ["Reminder", "リマインダー", "期限・予定の再確認"],
+        ["Newsletter", "ニュースレター", "定期配信"],
+      ]],
+      ["変更・中止・確認・お詫び", [
+        ["Change of / Schedule change", "変更について", "日程・場所変更"],
+        ["Cancellation of", "〜の中止", "イベント中止連絡"],
+        ["Confirmation of", "〜の確認", "予約・申込確認"],
+        ["Apology for", "〜のお詫び", "遅延・不備への謝罪"],
+        ["Re:", "返信", "前のメールへの返事"],
+      ]],
+      ["特典・募集・推薦", [
+        ["Special Offer / Promotion", "特別なご案内", "割引・キャンペーン"],
+        ["Recommendation", "おすすめ", "商品・本の推薦"],
+        ["Survey / Questionnaire", "アンケート", "意見募集"],
+        ["Recruitment / Looking for", "募集", "メンバー・参加者募集"],
+      ]],
+    ],
+  },
+  signature: {
+    label: "3. 署名・所属部署の語",
+    desc: "メール末尾の役職・所属で「会社の人」「クラブの人」「学校の人」を確定できる。",
+    sections: [
+      ["ビジネス系 (会社・お店)", [
+        ["Sales Department / Sales Division", "営業部・販売部", ""],
+        ["Marketing Department", "マーケティング部", ""],
+        ["Customer Service / Customer Support", "顧客サービス・カスタマーサポート", ""],
+        ["Public Relations (PR) Department", "広報部", ""],
+        ["Human Resources (HR) Department", "人事部", ""],
+        ["Accounting Department", "経理部", ""],
+        ["General Affairs Department", "総務部", ""],
+        ["Reservation Desk / Booking Department", "予約係", ""],
+        ["Reception / Front Desk", "受付", ""],
+      ]],
+      ["役職", [
+        ["Manager / Assistant Manager", "部長・課長 / 副", ""],
+        ["Director", "取締役・部長", ""],
+        ["President / CEO", "社長・最高経営責任者", ""],
+        ["Representative", "代表者", ""],
+        ["Staff / Clerk", "スタッフ・店員", ""],
+        ["Salesperson / Sales Representative", "販売員・営業担当", ""],
+        ["Secretary", "秘書", ""],
+      ]],
+      ["学校・教育系", [
+        ["Principal / Vice Principal", "校長・教頭", ""],
+        ["Teacher / Professor / Instructor", "教師・教授・講師", ""],
+        ["Coach", "指導者・コーチ", ""],
+        ["Student Council", "生徒会", ""],
+        ["English Department / Music Department", "英語科・音楽科", ""],
+        ["Admissions Office", "入学事務局", ""],
+        ["International Exchange Office", "国際交流課", ""],
+        ["Library Committee", "図書委員会", ""],
+      ]],
+      ["クラブ・サークル・団体系", [
+        ["Club President / Club Leader", "部長", ""],
+        ["Captain", "キャプテン", ""],
+        ["Member / Club Member", "部員", ""],
+        ["Organizer", "主催者", ""],
+        ["Coordinator", "取りまとめ役", ""],
+        ["Volunteer / Volunteer Leader", "ボランティア", ""],
+        ["Host / Host Family", "主催者・ホストファミリー", ""],
+      ]],
+      ["その他の職業系", [
+        ["Tour Guide", "ツアーガイド", ""],
+        ["Editor / Editor-in-chief", "編集者・編集長", ""],
+        ["Reporter / Journalist", "記者", ""],
+        ["Librarian", "司書", ""],
+        ["Curator", "学芸員", ""],
+        ["Receptionist", "受付係", ""],
+      ]],
+    ],
+  },
+  trend: {
+    label: "4. これから出そうな新傾向語",
+    desc: "SDGs・地域貢献・国際交流・オンライン化の流れで、英検が好みそうなテーマ語。",
+    sections: [
+      ["新傾向ワード", [
+        ["online lesson / online class", "オンライン授業", "コロナ後の定番テーマ"],
+        ["workshop", "体験講座・ワークショップ", ""],
+        ["internship", "インターン", ""],
+        ["recycling event", "リサイクル活動", "SDGs文脈"],
+        ["local festival", "地域祭・お祭り", ""],
+        ["exchange program", "交換留学プログラム", ""],
+        ["charity event / charity run", "チャリティーイベント", ""],
+        ["fundraising", "資金集め・募金活動", ""],
+        ["cultural exchange", "文化交流", ""],
+        ["eco-friendly / sustainable", "環境に優しい・持続可能な", ""],
+        ["membership", "会員資格", ""],
+        ["trial lesson / free trial", "体験レッスン・無料体験", ""],
+        ["school festival / culture festival", "学園祭・文化祭", ""],
+        ["exchange student", "交換留学生", ""],
+      ]],
+    ],
+  },
+};
+
+// === Render ===
+const panels = document.getElementById('panels');
+
+function key(cat, en) { return `${cat}::${en}`; }
+
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem('eiken2_vocab_v2') || '{}'); } catch (e) {}
+function save() {
+  try { localStorage.setItem('eiken2_vocab_v2', JSON.stringify(saved)); } catch (e) {}
+}
+
+function renderPanel(cat) {
+  const data = DATA[cat];
+  const panel = document.createElement('section');
+  panel.dataset.panel = cat;
+  panel.style.display = 'none';
+
+  const banner = document.createElement('div');
+  banner.className = `cat-banner ${cat}`;
+  banner.innerHTML = `<h2>${data.label}</h2><p>${data.desc}</p>`;
+  panel.appendChild(banner);
+
+  data.sections.forEach(([subname, items]) => {
+    const h = document.createElement('div');
+    h.className = 'subhead';
+    h.textContent = subname;
+    panel.appendChild(h);
+
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+    items.forEach(([en, ja, ctx]) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.cat = cat;
+      const k = key(cat, en);
+      const state = saved[k] || {};
+      if (state.done) card.classList.add('done');
+
+      const enEl = document.createElement('div');
+      enEl.className = 'en';
+      enEl.textContent = en;
+
+      const mark = document.createElement('button');
+      mark.className = 'mark';
+      mark.title = '覚えたらクリック';
+      mark.textContent = '✓';
+      mark.addEventListener('click', (e) => {
+        e.stopPropagation();
+        card.classList.toggle('done');
+        saved[k] = saved[k] || {};
+        saved[k].done = card.classList.contains('done');
+        save();
+        updateProgress();
+      });
+
+      const reveal = document.createElement('div');
+      reveal.className = 'reveal';
+      // default: hidden (test mode)
+      if (state.shown) {
+        reveal.classList.remove('hidden');
+      } else {
+        reveal.classList.add('hidden');
+      }
+      reveal.innerHTML = `<div class="ja">${ja}</div>${ctx ? `<div class="ctx">${ctx}</div>` : ''}`;
+      reveal.addEventListener('click', () => {
+        reveal.classList.toggle('hidden');
+        saved[k] = saved[k] || {};
+        saved[k].shown = !reveal.classList.contains('hidden');
+        save();
+      });
+
+      card.appendChild(mark);
+      card.appendChild(enEl);
+      card.appendChild(reveal);
+      grid.appendChild(card);
+    });
+    panel.appendChild(grid);
+  });
+
+  panels.appendChild(panel);
+}
+
+function renderStrategyPanel() {
+  const panel = document.createElement('section');
+  panel.dataset.panel = 'strategy';
+  panel.style.display = 'none';
+  panel.className = 'strategy-content';
+
+  panel.innerHTML = `
+    <div class="cat-banner strategy">
+      <h2>30秒で概要を把握する手順</h2>
+      <p>本文を読む前にこの順番で見ると、テーマの8割が分かる。</p>
+    </div>
+    <ol class="steps">
+      <li><strong>送信元アドレスの@前後</strong> を確認 → 友人個人 or 組織を判別</li>
+      <li><strong>件名 (Subject)</strong> を読む → 招待?質問?お知らせ?を一語で把握</li>
+      <li><strong>末尾の署名・部署名</strong> を確認 → 相手の立場を確定</li>
+      <li>本文で <strong>質問されている2点</strong> を探す → 答える内容を決める</li>
+    </ol>
+    <div class="tip">
+      <strong>💡 学習のコツ:</strong> このアプリは「日本語が隠れている」状態がデフォルトです。
+      英語を見て意味を頭の中で言ってから、グレーの部分をクリックして答え合わせをしましょう。
+      覚えたら右上の □ にチェックを入れて、未習得のものだけ残していきましょう。
+    </div>
+    <div class="tip">
+      <strong>💡 効率的な進め方:</strong> 1日1タブずつ覚えるのがおすすめ。
+      まず「アドレス」を完璧に → 翌日「件名」 → 「署名」→ 「新傾向」の順で進めると、
+      4日で全102語を一周できます。
+    </div>
+  `;
+  panels.appendChild(panel);
+}
+
+Object.keys(DATA).forEach(renderPanel);
+renderStrategyPanel();
+
+// === Counts ===
+function totalCount(cat) {
+  return DATA[cat].sections.reduce((s, [, items]) => s + items.length, 0);
+}
+function doneCount(cat) {
+  return DATA[cat].sections.reduce((s, [, items]) => {
+    return s + items.filter(([en]) => saved[key(cat, en)]?.done).length;
+  }, 0);
+}
+
+function updateCountChips() {
+  ['address', 'subject', 'signature', 'trend'].forEach(c => {
+    const el = document.getElementById(`count-${c}`);
+    if (el) el.textContent = `${doneCount(c)}/${totalCount(c)}`;
+  });
+}
+
+// === Tab switching ===
+let currentTab = 'address';
+const tabsEl = document.getElementById('tabs');
+function activateTab(cat) {
+  currentTab = cat;
+  document.querySelectorAll('.tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.cat === cat);
+  });
+  document.querySelectorAll('[data-panel]').forEach(p => {
+    p.style.display = p.dataset.panel === cat ? '' : 'none';
+  });
+  // Toolbar visibility - hide for strategy tab
+  document.getElementById('toolbar').style.display = (cat === 'strategy') ? 'none' : '';
+  updateProgress();
+  // restore search input
+  document.getElementById('search').value = '';
+  applySearch();
+  try { localStorage.setItem('eiken2_vocab_v2_tab', cat); } catch (e) {}
+}
+tabsEl.addEventListener('click', (e) => {
+  const t = e.target.closest('.tab');
+  if (t) activateTab(t.dataset.cat);
+});
+
+function updateProgress() {
+  if (currentTab === 'strategy') return;
+  document.getElementById('totalCount').textContent = totalCount(currentTab);
+  document.getElementById('doneCount').textContent = doneCount(currentTab);
+  updateCountChips();
+}
+
+// === Search filter ===
+function applySearch() {
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const activePanel = document.querySelector(`[data-panel="${currentTab}"]`);
+  if (!activePanel) return;
+  activePanel.querySelectorAll('.card').forEach(card => {
+    const text = card.textContent.toLowerCase();
+    card.classList.toggle('hidden-card', q && !text.includes(q));
+  });
+  // hide subheads whose grids are all hidden
+  activePanel.querySelectorAll('.subhead').forEach(h => {
+    const grid = h.nextElementSibling;
+    if (grid && grid.classList.contains('grid')) {
+      const visible = [...grid.children].some(c => !c.classList.contains('hidden-card'));
+      h.style.display = visible ? '' : 'none';
+      grid.style.display = visible ? '' : 'none';
+    }
+  });
+}
+document.getElementById('search').addEventListener('input', applySearch);
+
+// === Hide / Show all ===
+document.getElementById('hideAll').addEventListener('click', () => {
+  const panel = document.querySelector(`[data-panel="${currentTab}"]`);
+  panel?.querySelectorAll('.reveal').forEach(r => {
+    r.classList.add('hidden');
+    const card = r.closest('.card');
+    // we don't have direct access to key easily; rebuild from card content
+    const en = card.querySelector('.en').textContent;
+    saved[key(currentTab, en)] = { ...(saved[key(currentTab, en)] || {}), shown: false };
+  });
+  save();
+});
+document.getElementById('showAll').addEventListener('click', () => {
+  const panel = document.querySelector(`[data-panel="${currentTab}"]`);
+  panel?.querySelectorAll('.reveal').forEach(r => {
+    r.classList.remove('hidden');
+    const card = r.closest('.card');
+    const en = card.querySelector('.en').textContent;
+    saved[key(currentTab, en)] = { ...(saved[key(currentTab, en)] || {}), shown: true };
+  });
+  save();
+});
+
+// === Reset ===
+document.getElementById('reset').addEventListener('click', () => {
+  if (!confirm(`「${tabLabel(currentTab)}」の習得状況をリセットしますか?\n(他のタブには影響しません)`)) return;
+  const panel = document.querySelector(`[data-panel="${currentTab}"]`);
+  panel?.querySelectorAll('.card').forEach(card => {
+    card.classList.remove('done');
+    const en = card.querySelector('.en').textContent;
+    if (saved[key(currentTab, en)]) {
+      saved[key(currentTab, en)].done = false;
+    }
+  });
+  save();
+  updateProgress();
+});
+
+function tabLabel(cat) {
+  const t = document.querySelector(`.tab[data-cat="${cat}"]`);
+  return t ? t.textContent.replace(/\d+\/\d+/, '').trim() : cat;
+}
+
+// === Init ===
+const lastTab = (() => { try { return localStorage.getItem('eiken2_vocab_v2_tab'); } catch (e) { return null; } })();
+activateTab(lastTab && DATA[lastTab] ? lastTab : 'address');
+updateCountChips();
+</script>
+</body>
+</html>
