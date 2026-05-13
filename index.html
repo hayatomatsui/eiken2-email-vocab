@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>英検2級 Eメール問題 単語帳</title>
+<style>
+  :root {
+    --bg: #fafaf7;
+    --card: #ffffff;
+    --ink: #1a1a1a;
+    --sub: #666;
+    --line: #e5e5e0;
+    --accent: #c84b31;
+    --accent-soft: #fdf0ec;
+    --green: #4a7c4e;
+    --green-soft: #e8f1e8;
+    --blue: #2c5f8d;
+    --blue-soft: #e8f0f7;
+    --gold: #b8860b;
+    --gold-soft: #faf3e0;
+    --done: #d4edda;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", "Noto Sans JP", sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+  h1 {
+    font-size: 1.8em;
+    margin: 0 0 6px;
+    letter-spacing: -0.5px;
+  }
+  .lede {
+    color: var(--sub);
+    margin-bottom: 24px;
+    font-size: 0.95em;
+  }
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(250, 250, 247, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 12px 0;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .toolbar input[type="search"] {
+    flex: 1;
+    min-width: 180px;
+    padding: 9px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 0.95em;
+    background: white;
+  }
+  .btn {
+    padding: 9px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .btn:hover { background: #f0f0eb; }
+  .btn.active { background: var(--ink); color: white; border-color: var(--ink); }
+  .progress {
+    font-size: 0.85em;
+    color: var(--sub);
+    margin-left: auto;
+  }
+  .progress strong { color: var(--accent); }
+
+  section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px;
+    margin-bottom: 22px;
+  }
+  section h2 {
+    font-size: 1.25em;
+    margin: 0 0 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .tag {
+    display: inline-block;
+    font-size: 0.7em;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+  .tag.domain { background: var(--accent-soft); color: var(--accent); }
+  .tag.subject { background: var(--blue-soft); color: var(--blue); }
+  .tag.signature { background: var(--green-soft); color: var(--green); }
+  .tag.trend { background: var(--gold-soft); color: var(--gold); }
+  .section-note {
+    color: var(--sub);
+    font-size: 0.9em;
+    margin: 0 0 16px;
+  }
+
+  .subhead {
+    font-size: 0.95em;
+    font-weight: 600;
+    margin: 18px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: white;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    transition: all 0.15s;
+    cursor: pointer;
+    user-select: none;
+  }
+  .card:hover { border-color: #c8c8c0; transform: translateY(-1px); }
+  .card.done { background: var(--done); border-color: #b8d4be; opacity: 0.85; }
+  .card.done .en { text-decoration: line-through; opacity: 0.7; }
+  .card .check {
+    flex: 0 0 18px;
+    height: 18px;
+    margin-top: 3px;
+    border: 1.5px solid #c0c0b8;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--green);
+  }
+  .card.done .check { background: var(--green); border-color: var(--green); color: white; }
+  .card .text { flex: 1; min-width: 0; }
+  .en {
+    font-weight: 600;
+    font-size: 1em;
+    margin-bottom: 2px;
+    line-height: 1.35;
+  }
+  .ja {
+    font-size: 0.85em;
+    color: var(--sub);
+    line-height: 1.4;
+  }
+  .ctx {
+    font-size: 0.78em;
+    color: var(--sub);
+    margin-top: 4px;
+    font-style: italic;
+    opacity: 0.85;
+  }
+
+  /* Hide mode (flashcard) */
+  body.hide-jp .ja, body.hide-jp .ctx { visibility: hidden; }
+  body.hide-jp .card:hover .ja, body.hide-jp .card:hover .ctx { visibility: visible; }
+  body.hide-en .en { color: transparent; text-shadow: 0 0 8px rgba(0,0,0,0.5); }
+  body.hide-en .card:hover .en { color: var(--ink); text-shadow: none; }
+
+  .tip {
+    background: var(--gold-soft);
+    border-left: 3px solid var(--gold);
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-top: 12px;
+    font-size: 0.92em;
+  }
+  .tip strong { color: var(--gold); }
+
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+  }
+  .steps li {
+    counter-increment: step;
+    padding: 10px 0 10px 44px;
+    position: relative;
+    border-bottom: 1px dashed var(--line);
+  }
+  .steps li:last-child { border-bottom: none; }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 30px;
+    height: 30px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9em;
+  }
+  .steps strong { color: var(--accent); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 600px) {
+    body { padding: 12px; }
+    section { padding: 16px; }
+    .toolbar { gap: 6px; }
+    .btn { padding: 8px 10px; font-size: 0.85em; }
+    .progress { width: 100%; order: 99; }
+  }
+
+  @media print {
+    body { background: white; }
+    .toolbar, .btn { display: none !important; }
+    section { break-inside: avoid; page-break-inside: avoid; border: none; padding: 0; }
+    .card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>英検2級 Eメール問題 単語帳</h1>
+  <p class="lede">送信元アドレス・件名・署名から「誰が・何の目的で」を一瞬で見抜く語彙集。クリックでチェック、ボタンで暗記モード切替。</p>
+
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="🔍 英語/日本語で検索...">
+    <button class="btn" id="hideJp">日本語を隠す</button>
+    <button class="btn" id="hideEn">英語を隠す</button>
+    <button class="btn" id="reset">リセット</button>
+    <div class="progress">習得 <strong id="doneCount">0</strong> / <span id="totalCount">0</span></div>
+  </div>
+
+  <!-- 1. Domain / Address -->
+  <section>
+    <h2><span class="tag domain">1. ADDRESS</span>メールアドレスのドメイン・ユーザー名</h2>
+    <p class="section-note">@の前後を見ると「友人個人」「学校」「お店」「クラブ」などの正体がすぐ分かる。</p>
+
+    <div class="subhead">学校・教育機関</div>
+    <div class="grid" data-section="domain">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@school / @highschool</div><div class="ja">学校・高校</div><div class="ctx">授業・行事・留学の連絡</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@university / .edu</div><div class="ja">大学</div><div class="ctx">講義・大学生活・サークル</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@academy</div><div class="ja">学院・専門校</div><div class="ctx">習い事・専門学校</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@language-school</div><div class="ja">語学学校</div><div class="ctx">英会話・レッスン案内</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@cookingschool</div><div class="ja">料理教室</div><div class="ctx">体験レッスン・コース紹介</div></div></div>
+    </div>
+
+    <div class="subhead">クラブ・部活・サークル</div>
+    <div class="grid" data-section="domain">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@soccerclub / @baseballclub</div><div class="ja">サッカー部・野球部</div><div class="ctx">練習日程・大会案内</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@musicclub / @bandclub</div><div class="ja">音楽部・バンド</div><div class="ctx">演奏会・新メンバー募集</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@dramaclub / @theatre</div><div class="ja">演劇部・劇団</div><div class="ctx">公演・チケット</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@englishclub</div><div class="ja">英語部</div><div class="ctx">スピーチ大会・交流会</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@sportsclub / @gym / @fitness</div><div class="ja">スポーツクラブ・ジム</div><div class="ctx">入会・コース変更</div></div></div>
+    </div>
+
+    <div class="subhead">お店・サービス</div>
+    <div class="grid" data-section="domain">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@bookstore</div><div class="ja">書店</div><div class="ctx">取り寄せ・新刊案内</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@cafe / @restaurant</div><div class="ja">カフェ・レストラン</div><div class="ctx">予約確認・新メニュー</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@travelagency / @tourism</div><div class="ja">旅行会社・観光局</div><div class="ctx">ツアー案内・予約変更</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@hotel / @resort</div><div class="ja">ホテル・リゾート</div><div class="ctx">宿泊予約・キャンセル</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@shop / @store</div><div class="ja">店舗</div><div class="ctx">商品案内・セール</div></div></div>
+    </div>
+
+    <div class="subhead">公共・地域施設</div>
+    <div class="grid" data-section="domain">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@library</div><div class="ja">図書館</div><div class="ctx">返却・イベント・読書会</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@museum / @gallery</div><div class="ja">博物館・美術館</div><div class="ctx">展示・開館時間</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@zoo / @aquarium</div><div class="ja">動物園・水族館</div><div class="ctx">特別展示・割引案内</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@community-center</div><div class="ja">公民館・地域センター</div><div class="ctx">地域行事・講座</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@volunteer / @charity</div><div class="ja">ボランティア団体</div><div class="ctx">活動募集・寄付呼びかけ</div></div></div>
+    </div>
+
+    <div class="subhead">個人・ホストファミリー</div>
+    <div class="grid" data-section="domain">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@gmail.com / @yahoo.com / @hotmail.com</div><div class="ja">個人アカウント</div><div class="ctx">友人・家族からの私信</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">@hostfamily / @homestay</div><div class="ja">ホストファミリー</div><div class="ctx">受け入れ準備・生活ルール</div></div></div>
+    </div>
+
+    <div class="subhead">業務窓口を示すユーザー名 (@の前)</div>
+    <div class="grid" data-section="domain">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">info@</div><div class="ja">案内窓口</div><div class="ctx">一般的なお知らせ</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">support@ / help@</div><div class="ja">サポート窓口</div><div class="ctx">問題対応・問い合わせ返信</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">sales@</div><div class="ja">営業窓口</div><div class="ctx">商品案内・売込み</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">contact@ / inquiry@</div><div class="ja">問い合わせ窓口</div><div class="ctx">一般質問への返信</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">newsletter@ / news@</div><div class="ja">メルマガ配信</div><div class="ctx">定期お知らせ・キャンペーン</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">reservation@ / booking@</div><div class="ja">予約係</div><div class="ctx">予約確認・変更</div></div></div>
+    </div>
+  </section>
+
+  <!-- 2. Subject -->
+  <section>
+    <h2><span class="tag subject">2. SUBJECT</span>件名 (Subject) の頻出語</h2>
+    <p class="section-note">件名は「メールの目的」を一語で示す。動詞・名詞のパターンで覚えると速い。</p>
+
+    <div class="subhead">招待・歓迎・感謝</div>
+    <div class="grid" data-section="subject">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Invitation to / Invitation for</div><div class="ja">〜への招待</div><div class="ctx">パーティー・イベント参加依頼</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Welcome to</div><div class="ja">〜へようこそ</div><div class="ctx">新メンバー・新生活</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Thank you for</div><div class="ja">〜への御礼</div><div class="ctx">贈り物・参加への感謝</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Congratulations on</div><div class="ja">〜おめでとう</div><div class="ctx">合格・受賞</div></div></div>
+    </div>
+
+    <div class="subhead">質問・依頼・問い合わせ</div>
+    <div class="grid" data-section="subject">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Question about</div><div class="ja">〜についての質問</div><div class="ctx">商品・授業・予定の問い合わせ</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Inquiry about</div><div class="ja">〜のお問い合わせ</div><div class="ctx">顧客からの正式な質問</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Request for</div><div class="ja">〜のお願い</div><div class="ctx">協力依頼・提出依頼</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Help with</div><div class="ja">〜の手伝いを</div><div class="ctx">作業・課題の協力依頼</div></div></div>
+    </div>
+
+    <div class="subhead">お知らせ・案内・更新</div>
+    <div class="grid" data-section="subject">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Information about</div><div class="ja">〜のご案内</div><div class="ctx">イベント・サービスの説明</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Notice / Notification of</div><div class="ja">〜のお知らせ</div><div class="ctx">変更・中止通知</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Announcement</div><div class="ja">発表・告知</div><div class="ctx">新企画・新発売</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Update on</div><div class="ja">〜の最新情報</div><div class="ctx">進捗・状況報告</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Reminder</div><div class="ja">リマインダー</div><div class="ctx">期限・予定の再確認</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Newsletter</div><div class="ja">ニュースレター</div><div class="ctx">定期配信</div></div></div>
+    </div>
+
+    <div class="subhead">変更・中止・確認・お詫び</div>
+    <div class="grid" data-section="subject">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Change of / Schedule change</div><div class="ja">変更について</div><div class="ctx">日程・場所変更</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Cancellation of</div><div class="ja">〜の中止</div><div class="ctx">イベント中止連絡</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Confirmation of</div><div class="ja">〜の確認</div><div class="ctx">予約・申込確認</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Apology for</div><div class="ja">〜のお詫び</div><div class="ctx">遅延・不備への謝罪</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Re:</div><div class="ja">返信</div><div class="ctx">前のメールへの返事</div></div></div>
+    </div>
+
+    <div class="subhead">特典・募集・推薦</div>
+    <div class="grid" data-section="subject">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Special Offer / Promotion</div><div class="ja">特別なご案内</div><div class="ctx">割引・キャンペーン</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Recommendation</div><div class="ja">おすすめ</div><div class="ctx">商品・本の推薦</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Survey / Questionnaire</div><div class="ja">アンケート</div><div class="ctx">意見募集</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Recruitment / Looking for</div><div class="ja">募集</div><div class="ctx">メンバー・参加者募集</div></div></div>
+    </div>
+  </section>
+
+  <!-- 3. Signature -->
+  <section>
+    <h2><span class="tag signature">3. SIGNATURE</span>署名・所属部署の語</h2>
+    <p class="section-note">メール末尾の役職・所属で「会社の人」「クラブの人」「学校の人」を確定できる。</p>
+
+    <div class="subhead">ビジネス系 (会社・お店)</div>
+    <div class="grid" data-section="signature">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Sales Department / Sales Division</div><div class="ja">営業部・販売部</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Marketing Department</div><div class="ja">マーケティング部</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Customer Service / Customer Support</div><div class="ja">顧客サービス・カスタマーサポート</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Public Relations (PR) Department</div><div class="ja">広報部</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Human Resources (HR) Department</div><div class="ja">人事部</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Accounting Department</div><div class="ja">経理部</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">General Affairs Department</div><div class="ja">総務部</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Reservation Desk / Booking Department</div><div class="ja">予約係</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Reception / Front Desk</div><div class="ja">受付</div></div></div>
+    </div>
+
+    <div class="subhead">役職</div>
+    <div class="grid" data-section="signature">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Manager / Assistant Manager</div><div class="ja">部長・課長 / 副</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Director</div><div class="ja">取締役・部長</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">President / CEO</div><div class="ja">社長・最高経営責任者</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Representative</div><div class="ja">代表者</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Staff / Clerk</div><div class="ja">スタッフ・店員</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Salesperson / Sales Representative</div><div class="ja">販売員・営業担当</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Secretary</div><div class="ja">秘書</div></div></div>
+    </div>
+
+    <div class="subhead">学校・教育系</div>
+    <div class="grid" data-section="signature">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Principal / Vice Principal</div><div class="ja">校長・教頭</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Teacher / Professor / Instructor</div><div class="ja">教師・教授・講師</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Coach</div><div class="ja">指導者・コーチ</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Student Council</div><div class="ja">生徒会</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">English Department / Music Department</div><div class="ja">英語科・音楽科</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Admissions Office</div><div class="ja">入学事務局</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">International Exchange Office</div><div class="ja">国際交流課</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Library Committee</div><div class="ja">図書委員会</div></div></div>
+    </div>
+
+    <div class="subhead">クラブ・サークル・団体系</div>
+    <div class="grid" data-section="signature">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Club President / Club Leader</div><div class="ja">部長</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Captain</div><div class="ja">キャプテン</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Member / Club Member</div><div class="ja">部員</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Organizer</div><div class="ja">主催者</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Coordinator</div><div class="ja">取りまとめ役</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Volunteer / Volunteer Leader</div><div class="ja">ボランティア</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Host / Host Family</div><div class="ja">主催者・ホストファミリー</div></div></div>
+    </div>
+
+    <div class="subhead">その他の職業系</div>
+    <div class="grid" data-section="signature">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Tour Guide</div><div class="ja">ツアーガイド</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Editor / Editor-in-chief</div><div class="ja">編集者・編集長</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Reporter / Journalist</div><div class="ja">記者</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Librarian</div><div class="ja">司書</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Curator</div><div class="ja">学芸員</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">Receptionist</div><div class="ja">受付係</div></div></div>
+    </div>
+  </section>
+
+  <!-- 4. New trend words -->
+  <section>
+    <h2><span class="tag trend">4. NEW TREND</span>これから出そうな新傾向語</h2>
+    <p class="section-note">SDGs・地域貢献・国際交流・オンライン化の流れで、英検が好みそうなテーマ語。</p>
+    <div class="grid" data-section="trend">
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">online lesson / online class</div><div class="ja">オンライン授業</div><div class="ctx">コロナ後の定番テーマ</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">workshop</div><div class="ja">体験講座・ワークショップ</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">internship</div><div class="ja">インターン</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">recycling event</div><div class="ja">リサイクル活動</div><div class="ctx">SDGs文脈</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">local festival</div><div class="ja">地域祭・お祭り</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">exchange program</div><div class="ja">交換留学プログラム</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">charity event / charity run</div><div class="ja">チャリティーイベント</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">fundraising</div><div class="ja">資金集め・募金活動</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">cultural exchange</div><div class="ja">文化交流</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">eco-friendly / sustainable</div><div class="ja">環境に優しい・持続可能な</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">membership</div><div class="ja">会員資格</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">trial lesson / free trial</div><div class="ja">体験レッスン・無料体験</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">school festival / culture festival</div><div class="ja">学園祭・文化祭</div></div></div>
+      <div class="card"><div class="check">✓</div><div class="text"><div class="en">exchange student</div><div class="ja">交換留学生</div></div></div>
+    </div>
+  </section>
+
+  <!-- 5. Strategy -->
+  <section>
+    <h2><span class="tag domain">5. STRATEGY</span>30秒で概要を把握する手順</h2>
+    <ol class="steps">
+      <li><strong>送信元アドレスの@前後</strong>を確認 → 友人個人 or 組織を判別。</li>
+      <li><strong>件名 (Subject)</strong>を読む → 招待?質問?お知らせ?を一語で把握。</li>
+      <li><strong>末尾の署名・部署名</strong>を確認 → 相手の立場を確定。</li>
+      <li>本文で<strong>質問されている2点</strong>を探す → 答える内容を決める。</li>
+    </ol>
+    <div class="tip"><strong>💡 コツ:</strong> 本文を読む前にこの3点 (アドレス・件名・署名) を見るだけで、テーマの8割が分かる。返信内容の方向性 (フォーマル/カジュアル、内容のテーマ) もここで決まる。</div>
+  </section>
+</div>
+
+<script>
+(function() {
+  const cards = document.querySelectorAll('.card');
+  const doneCountEl = document.getElementById('doneCount');
+  const totalCountEl = document.getElementById('totalCount');
+  const searchEl = document.getElementById('search');
+  const hideJpBtn = document.getElementById('hideJp');
+  const hideEnBtn = document.getElementById('hideEn');
+  const resetBtn = document.getElementById('reset');
+
+  totalCountEl.textContent = cards.length;
+
+  // Load saved state
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('eiken2_email_vocab') || '{}'); } catch(e) {}
+
+  function key(card) {
+    return card.querySelector('.en').textContent.trim();
+  }
+
+  function updateCount() {
+    const done = document.querySelectorAll('.card.done').length;
+    doneCountEl.textContent = done;
+  }
+
+  cards.forEach(card => {
+    if (saved[key(card)]) card.classList.add('done');
+    card.addEventListener('click', () => {
+      card.classList.toggle('done');
+      saved[key(card)] = card.classList.contains('done');
+      try { localStorage.setItem('eiken2_email_vocab', JSON.stringify(saved)); } catch(e) {}
+      updateCount();
+    });
+  });
+  updateCount();
+
+  // Search filter
+  searchEl.addEventListener('input', () => {
+    const q = searchEl.value.toLowerCase().trim();
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.classList.toggle('hidden', q && !text.includes(q));
+    });
+  });
+
+  // Hide modes
+  hideJpBtn.addEventListener('click', () => {
+    document.body.classList.toggle('hide-jp');
+    document.body.classList.remove('hide-en');
+    hideJpBtn.classList.toggle('active');
+    hideEnBtn.classList.remove('active');
+  });
+  hideEnBtn.addEventListener('click', () => {
+    document.body.classList.toggle('hide-en');
+    document.body.classList.remove('hide-jp');
+    hideEnBtn.classList.toggle('active');
+    hideJpBtn.classList.remove('active');
+  });
+
+  // Reset
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('習得状況をすべてリセットしますか?')) return;
+    cards.forEach(card => card.classList.remove('done'));
+    saved = {};
+    try { localStorage.removeItem('eiken2_email_vocab'); } catch(e) {}
+    updateCount();
+  });
+})();
+</script>
+</body>
+</html>
